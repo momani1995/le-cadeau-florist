@@ -1,0 +1,74 @@
+{
+  "bouquets": [
+    {
+      "id": "noir-velvet-roses",
+      "name": "Noir Velvet Roses",
+      "category": "Bouquet",
+      "price": "$185",
+      "imageSrc": "/products/rose.svg",
+      "description": "Thirty long-stem velvet roses, hand-tied with forest silk ribbon and a brushed-gold seal.",
+      "featured": true
+    },
+    {
+      "id": "midnight-peony-cloud",
+      "name": "Midnight Peony Cloud",
+      "category": "Bouquet",
+      "price": "$210",
+      "imageSrc": "/products/rose.svg",
+      "description": "Billowing peonies and garden roses in a loose, cinematic silhouette.",
+      "featured": false
+    }
+  ],
+  "hatBoxes": [
+    {
+      "id": "etoile-hat-box",
+      "name": "Étoile Hat Box",
+      "category": "Hat Box",
+      "price": "$240",
+      "imageSrc": "/products/hat-box.svg",
+      "description": "Velvet hat box brimming with layered garden roses and seasonal texture.",
+      "featured": true
+    },
+    {
+      "id": "champagne-rue-box",
+      "name": "Champagne Rue Box",
+      "category": "Hat Box",
+      "price": "$260",
+      "imageSrc": "/products/hat-box.svg",
+      "description": "Soft champagne tones with structural foliage in a Parisian hat box.",
+      "featured": false
+    }
+  ],
+  "candles": [
+    {
+      "id": "brushed-gold-candle",
+      "name": "Brushed Gold Candle",
+      "category": "Candle",
+      "price": "$78",
+      "imageSrc": "/products/candle.svg",
+      "description": "Hand-poured candle in a brushed-gold vessel with notes of cedar, amber and white florals.",
+      "featured": true
+    },
+    {
+      "id": "atelier-fig-candle",
+      "name": "Atelier Fig Candle",
+      "category": "Candle",
+      "price": "$68",
+      "imageSrc": "/products/candle.svg",
+      "description": "Lush fig, black tea and moss in a smoked glass jar.",
+      "featured": false
+    }
+  ],
+  "plants": [
+    {
+      "id": "atelier-olive-plant",
+      "name": "Atelier Olive Plant",
+      "category": "Indoor Plant",
+      "price": "$96",
+      "imageSrc": "/products/plant.svg",
+      "description": "Sculptural olive tree in a matte ceramic vessel, styled for light-flooded interiors.",
+      "featured": true
+    }
+  ]
+}
+
