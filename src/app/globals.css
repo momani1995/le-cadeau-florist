@@ -18,24 +18,20 @@
   --color-cream: var(--accent-cream);
   --color-gold: var(--accent-gold);
   --color-gold-soft: var(--accent-gold-soft);
-
-  --font-heading: var(--font-heading);
-  --font-body: var(--font-body);
 }
 
 body {
   background: radial-gradient(circle at top left, #19372a 0, #020c08 48%, #000000 100%);
   color: var(--foreground);
-  font-family: var(--font-body), system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
 }
 
 .font-heading {
-  font-family: var(--font-heading), "Playfair Display", "Times New Roman",
-    serif;
+  font-family: "Playfair Display", "Times New Roman", serif;
 }
 
 .font-body {
-  font-family: var(--font-body), system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+  font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
 }

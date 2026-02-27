@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Flower } from "lucide-react"; // Replace FleurDeLis with Flower
+import { ShoppingBag } from "lucide-react";
+import { FleurDeLis } from "@/components/fleur-de-lis";
+import { useCart } from "@/components/cart-context";
 
 const navLinks = [
   { href: "/bouquets", label: "Flower Bouquets" },
@@ -12,6 +14,8 @@ const navLinks = [
 ];
 
 export function MainNav() {
+  const { totalQuantity, toggleCart } = useCart();
+
   return (
     <motion.header
       initial={{ opacity: 0, y: -16 }}
@@ -22,7 +26,7 @@ export function MainNav() {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 lg:px-8">
         <Link href="/" className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[color:#1d2b23] ring-1 ring-brand-gold/45 shadow-[0_0_25px_rgba(212,175,55,0.3)]">
-            <Flower className="h-5 w-5 text-brand-gold" strokeWidth={1.6} />
+            <FleurDeLis size={20} strokeWidth={1.6} className="text-brand-gold" />
           </div>
           <div className="leading-tight">
             <p className="font-heading text-[0.95rem] tracking-[0.18em] text-brand-gold">
@@ -51,12 +55,19 @@ export function MainNav() {
           <button className="hidden rounded-full border border-brand-gold/25 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.22em] text-[color:#f6f1e8]/85 transition hover:border-brand-gold hover:bg-brand-gold/10 md:inline-flex">
             Visit Boutique
           </button>
-          <Link
-            href="#featured"
-            className="inline-flex items-center justify-center rounded-full bg-brand-gold px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-[color:#1b231f] shadow-[0_14px_45px_rgba(0,0,0,0.45)] transition hover:bg-brand-gold/90"
+          <button
+            type="button"
+            onClick={toggleCart}
+            className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-brand-gold/30 bg-[color:rgba(3,17,11,0.9)] text-brand-gold shadow-[0_10px_25px_rgba(0,0,0,0.5)] transition hover:border-brand-gold hover:bg-[color:rgba(8,27,19,0.9)]"
+            aria-label="Open cart"
           >
-            Shop Now
-          </Link>
+            <ShoppingBag className="h-4 w-4" />
+            {totalQuantity > 0 && (
+              <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-brand-gold px-1 text-[0.6rem] font-semibold text-[color:#1b231f]">
+                {totalQuantity}
+              </span>
+            )}
+          </button>
         </div>
       </div>
     </motion.header>

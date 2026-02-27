@@ -1,0 +1,47 @@
+[
+  {
+    "id": "b1",
+    "category": "Flower Bouquets",
+    "name": "The Versailles Symphony",
+    "description": "A regal arrangement of white peonies, gold-dipped eucalyptus, and cream roses.",
+    "price": 120,
+    "image": "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&q=80&w=800",
+    "isFeatured": true
+  },
+  {
+    "id": "hb1",
+    "category": "Hat Boxes",
+    "name": "Midnight Velvet Box",
+    "description": "Signature black suede hat box filled with 24 deep red 'Forever' roses.",
+    "price": 185,
+    "image": "https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&q=80&w=800",
+    "isFeatured": true
+  },
+  {
+    "id": "c1",
+    "category": "Candles & Gifts",
+    "name": "Fleur-de-Lis Gold Soy Candle",
+    "description": "Hand-poured white soy wax with notes of jasmine, sandalwood, and amber.",
+    "price": 45,
+    "image": "https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&q=80&w=800",
+    "isFeatured": false
+  },
+  {
+    "id": "p1",
+    "category": "Indoor Plants",
+    "name": "Stately Fiddle Leaf Fig",
+    "description": "A premium 5-foot Fiddle Leaf Fig in a brushed gold ceramic pot.",
+    "price": 140,
+    "image": "https://images.unsplash.com/photo-1525498122393-3004fe161397?auto=format&fit=crop&q=80&w=800",
+    "isFeatured": false
+  },
+  {
+    "id": "bl1",
+    "category": "Balloons",
+    "name": "Celebration Gold Cluster",
+    "description": "A sophisticated mix of metallic gold, clear confetti, and cream helium balloons.",
+    "price": 35,
+    "image": "https://images.unsplash.com/photo-1530103862676-fa8c9d34bb34?auto=format&fit=crop&q=80&w=800",
+    "isFeatured": false
+  }
+]

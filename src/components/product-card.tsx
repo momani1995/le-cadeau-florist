@@ -1,18 +1,36 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
+import { useCart } from "@/components/cart-context";
 
 export type ProductCardProps = {
+  id?: string;
   name: string;
   price: string;
   imageSrc: string;
   category?: string;
 };
 
-export function ProductCard({ name, price, imageSrc, category }: ProductCardProps) {
-  return (
+export function ProductCard({
+  id,
+  name,
+  price,
+  imageSrc,
+  category,
+}: ProductCardProps) {
+  const { addItem } = useCart();
+
+  const handleAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!id) return;
+    addItem({ id, name, price, imageSrc, category });
+  };
+
+  const card = (
     <motion.article
       initial={{ opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -33,7 +51,12 @@ export function ProductCard({ name, price, imageSrc, category }: ProductCardProp
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
 
         <div className="absolute inset-x-3 bottom-3 translate-y-4 opacity-0 transition-all duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100">
-          <button className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand-gold px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[color:#1b231f] shadow-[0_18px_55px_rgba(0,0,0,0.65)] transition hover:bg-brand-gold/90">
+          <button
+            type="button"
+            onClick={handleAdd}
+            disabled={!id}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand-gold px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[color:#1b231f] shadow-[0_18px_55px_rgba(0,0,0,0.65)] transition hover:bg-brand-gold/90 disabled:cursor-not-allowed disabled:opacity-60"
+          >
             <ShoppingBag className="h-4 w-4" />
             Add to Cart
           </button>
@@ -53,5 +76,10 @@ export function ProductCard({ name, price, imageSrc, category }: ProductCardProp
       </div>
     </motion.article>
   );
+
+  if (id) {
+    return <Link href={`/product/${id}`}>{card}</Link>;
+  }
+  return card;
 }
 
