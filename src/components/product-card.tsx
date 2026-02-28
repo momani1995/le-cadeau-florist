@@ -1,10 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
 import { useCart } from "@/components/cart-context";
+import { SafeImage } from "@/components/safe-image";
+import { normalizeImageSrc } from "@/lib/images";
 
 export type ProductCardProps = {
   id?: string;
@@ -12,6 +13,7 @@ export type ProductCardProps = {
   price: string;
   imageSrc: string;
   category?: string;
+  isMothersDay?: boolean;
 };
 
 export function ProductCard({
@@ -20,14 +22,16 @@ export function ProductCard({
   price,
   imageSrc,
   category,
+  isMothersDay,
 }: ProductCardProps) {
   const { addItem } = useCart();
+  const resolvedSrc = normalizeImageSrc(imageSrc);
 
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!id) return;
-    addItem({ id, name, price, imageSrc, category });
+    addItem({ id, name, price, imageSrc: resolvedSrc, category });
   };
 
   const card = (
@@ -39,7 +43,7 @@ export function ProductCard({
       className="group relative overflow-hidden rounded-2xl border border-brand-gold/20 bg-[color:rgba(7,19,14,0.88)] shadow-[0_22px_55px_rgba(0,0,0,0.7)] backdrop-blur"
     >
       <div className="relative aspect-[4/5] overflow-hidden">
-        <Image
+        <SafeImage
           src={imageSrc}
           alt={name}
           fill
@@ -50,15 +54,23 @@ export function ProductCard({
 
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
 
+        {isMothersDay && (
+          <span className="absolute left-3 top-3 rounded-full bg-[color:rgba(247,231,230,0.95)] px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-[color:#4b1f2a] shadow-[0_10px_25px_rgba(0,0,0,0.45)]">
+            Limited Edition
+          </span>
+        )}
+
         <div className="absolute inset-x-3 bottom-3 translate-y-4 opacity-0 transition-all duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100">
           <button
             type="button"
             onClick={handleAdd}
             disabled={!id}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand-gold px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[color:#1b231f] shadow-[0_18px_55px_rgba(0,0,0,0.65)] transition hover:bg-brand-gold/90 disabled:cursor-not-allowed disabled:opacity-60"
+            className="group/button relative inline-flex w-full items-center justify-center gap-2 rounded-full border border-transparent bg-[linear-gradient(135deg,#D4AF37,#F9E498)] bg-[length:200%_200%] px-[1px] py-[1px] text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-[color:#fdf9ee] shadow-[0_0_24px_rgba(212,175,55,0.55)] transition-all duration-300 hover:bg-[position:100%_0] active:scale-95 active:shadow-[0_0_36px_rgba(212,175,55,0.8)] disabled:cursor-not-allowed disabled:opacity-60"
           >
-            <ShoppingBag className="h-4 w-4" />
-            Add to Cart
+            <span className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[color:#0b3b2e] px-4 py-2">
+              <ShoppingBag className="h-4 w-4 text-[color:#fdf9ee]" />
+              <span>Add to Cart</span>
+            </span>
           </button>
         </div>
       </div>

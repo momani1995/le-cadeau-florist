@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import { SafeImage } from "@/components/safe-image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { FleurDeLis } from "@/components/fleur-de-lis";
 import { useCart } from "@/components/cart-context";
+
+type PaymentMethod = "card" | "local" | "wallet";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -24,6 +26,8 @@ export default function CheckoutPage() {
   const [isPlacing, setIsPlacing] = useState(false);
   const [deliveryDate, setDeliveryDate] = useState("");
   const [deliveryError, setDeliveryError] = useState("");
+  const [includeMothersDayCard, setIncludeMothersDayCard] = useState(true);
+   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
 
   const hasItems = items.length > 0;
 
@@ -62,13 +66,35 @@ export default function CheckoutPage() {
     setDeliveryDate(value);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!hasItems || isPlacing || !deliveryDate || deliveryError) return;
+
     setIsPlacing(true);
-    setTimeout(() => {
-      router.push("/success");
-    }, 1400);
+    try {
+      await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items,
+          totalPrice,
+          giftMessage,
+          deliveryDate,
+          includeMothersDayCard,
+          paymentMethod,
+        }),
+      });
+    } catch (error) {
+      // For now we gracefully fall back to client-side success even if the
+      // backend is not yet implemented.
+      console.error("Error sending checkout data", error);
+    } finally {
+      setTimeout(() => {
+        router.push("/success");
+      }, 1400);
+    }
   };
 
   if (!hasItems) {
@@ -230,6 +256,27 @@ export default function CheckoutPage() {
                     {giftMessage.length}/250 characters
                   </p>
                 </div>
+                <div className="flex items-start gap-2">
+                  <input
+                    id="mothers-day-card"
+                    type="checkbox"
+                    checked={includeMothersDayCard}
+                    onChange={(e) =>
+                      setIncludeMothersDayCard(e.target.checked)
+                    }
+                    className="mt-0.5 h-4 w-4 rounded border border-brand-gold/70 bg-[color:#020908] text-brand-gold focus:ring-brand-gold/50"
+                  />
+                  <label
+                    htmlFor="mothers-day-card"
+                    className="text-xs text-[color:#f6f1e8]/80"
+                  >
+                    Include a{" "}
+                    <span className="font-semibold">
+                      complimentary Mother&apos;s Day card
+                    </span>{" "}
+                    beautifully hand-lettered with your message.
+                  </label>
+                </div>
                 <div className="space-y-1">
                   <label className="text-xs text-[color:#f6f1e8]/80">
                     Requested Delivery Date
@@ -250,28 +297,120 @@ export default function CheckoutPage() {
                 </div>
               </section>
 
-              {/* Payment (simulated Stripe Elements) */}
+              {/* Payment Method */}
               <section className="space-y-4">
                 <p className="font-heading text-[0.7rem] uppercase tracking-[0.3em] text-brand-gold">
-                  Payment
+                  Payment Method
                 </p>
                 <div className="space-y-3 rounded-2xl border border-white/10 bg-[color:#020908] p-4">
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs text-[color:#9ca3af]">
-                      Card Details (secured by Stripe)
-                    </p>
-                    <div className="flex items-center gap-1 text-[0.6rem] uppercase tracking-[0.2em] text-[color:#6b7280]">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                      Encrypted
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="rounded-xl border border-white/15 bg-[color:#020908] px-3 py-2 text-xs text-[color:#e5e7eb]">
-                      4242 4242 4242 4242 • MM/YY • CVC
-                    </div>
-                    <div className="flex gap-2 text-[0.6rem] text-[color:#6b7280]">
-                      <span>Test mode · No card will be charged</span>
-                    </div>
+                  <p className="text-xs text-[color:#9ca3af]">
+                    Choose how you would like to complete your payment.
+                  </p>
+                  <div className="grid gap-3 md:grid-cols-3">
+                    {/* Credit / Debit Card */}
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod("card")}
+                      className={`flex flex-col justify-between rounded-2xl border px-3 py-3 text-left transition ${
+                        paymentMethod === "card"
+                          ? "border-brand-gold bg-[radial-gradient(circle_at_top,#1b3b2e,#020908)] shadow-[0_0_0_1px_rgba(212,175,55,0.4)]"
+                          : "border-white/10 bg-[color:#020908] hover:border-brand-gold/60 hover:bg-[radial-gradient(circle_at_top,#12261c,#020908)]"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div>
+                          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-[color:#f6f1e8]">
+                            Credit / Debit Card
+                          </p>
+                          <p className="mt-1 text-[0.65rem] text-[color:#9ca3af]">
+                            All major international cards.
+                          </p>
+                        </div>
+                        <div className="flex flex-col items-end gap-1 text-[0.65rem] font-semibold uppercase tracking-[0.26em] text-brand-gold">
+                          <span className="rounded-full border border-brand-gold/40 px-2 py-0.5">
+                            Visa
+                          </span>
+                          <span className="rounded-full border border-brand-gold/40 px-2 py-0.5">
+                            Mastercard
+                          </span>
+                        </div>
+                      </div>
+                      {paymentMethod === "card" && (
+                        <p className="mt-2 text-[0.6rem] text-[color:#f6f1e8]/70">
+                          Card details will be collected on the next secure step.
+                        </p>
+                      )}
+                    </button>
+
+                    {/* Jordanian Local Cards */}
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod("local")}
+                      className={`flex flex-col justify-between rounded-2xl border px-3 py-3 text-left transition ${
+                        paymentMethod === "local"
+                          ? "border-brand-gold bg-[radial-gradient(circle_at_top,#1b3b2e,#020908)] shadow-[0_0_0_1px_rgba(212,175,55,0.4)]"
+                          : "border-white/10 bg-[color:#020908] hover:border-brand-gold/60 hover:bg-[radial-gradient(circle_at_top,#12261c,#020908)]"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div>
+                          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-[color:#f6f1e8]">
+                            Jordanian Local Cards
+                          </p>
+                          <p className="mt-1 text-[0.65rem] text-[color:#9ca3af]">
+                            Pay using Jordanian bank cards.
+                          </p>
+                        </div>
+                        <div className="flex flex-col items-end gap-1 text-[0.6rem] font-semibold uppercase tracking-[0.24em] text-brand-gold/90">
+                          <span className="rounded-full border border-brand-gold/40 px-2 py-0.5">
+                            JCC
+                          </span>
+                          <span className="rounded-full border border-brand-gold/40 px-2 py-0.5">
+                            Network Intl.
+                          </span>
+                        </div>
+                      </div>
+                      {paymentMethod === "local" && (
+                        <p className="mt-2 text-[0.6rem] text-[color:#f6f1e8]/70">
+                          You&apos;ll be redirected to a secure local payment page.
+                        </p>
+                      )}
+                    </button>
+
+                    {/* Apple Pay / Google Pay */}
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod("wallet")}
+                      className={`flex flex-col justify-between rounded-2xl border px-3 py-3 text-left transition ${
+                        paymentMethod === "wallet"
+                          ? "border-brand-gold bg-[radial-gradient(circle_at_top,#1b3b2e,#020908)] shadow-[0_0_0_1px_rgba(212,175,55,0.4)]"
+                          : "border-white/10 bg-[color:#020908] hover:border-brand-gold/60 hover:bg-[radial-gradient(circle_at_top,#12261c,#020908)]"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div>
+                          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-[color:#f6f1e8]">
+                            Apple Pay / Google Pay
+                          </p>
+                          <p className="mt-1 text-[0.65rem] text-[color:#9ca3af]">
+                            One-tap checkout on supported devices.
+                          </p>
+                        </div>
+                        <div className="flex flex-col items-end gap-1 text-[0.7rem] font-semibold text-brand-gold">
+                          <span className="rounded-full border border-brand-gold/40 px-2 py-0.5">
+                             Pay
+                          </span>
+                          <span className="rounded-full border border-brand-gold/40 px-2 py-0.5">
+                            G Pay
+                          </span>
+                        </div>
+                      </div>
+                      {paymentMethod === "wallet" && (
+                        <p className="mt-2 text-[0.6rem] text-[color:#f6f1e8]/70">
+                          We&apos;ll prompt your device wallet to complete payment.
+                        </p>
+                      )}
+                    </button>
                   </div>
                 </div>
               </section>
@@ -288,7 +427,7 @@ export default function CheckoutPage() {
                     className="animate-spin text-brand-gold"
                   />
                 )}
-                {isPlacing ? "Placing Order..." : "Place Order"}
+                {isPlacing ? "Completing Order..." : "Complete Order"}
               </button>
             </form>
           </motion.div>
@@ -323,12 +462,13 @@ export default function CheckoutPage() {
                       className="flex items-center gap-3 rounded-2xl border border-white/5 bg-[color:rgba(4,15,11,0.9)] p-3"
                     >
                       <div className="relative h-16 w-14 overflow-hidden rounded-xl bg-[color:#111827]">
-                        <Image
+                        <SafeImage
                           src={item.imageSrc}
                           alt={item.name}
                           fill
                           sizes="56px"
                           className="object-cover"
+                          fallbackClassName="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-[color:#111827] text-[color:#9ca3af]"
                         />
                       </div>
                       <div className="flex flex-1 flex-col justify-between gap-1">

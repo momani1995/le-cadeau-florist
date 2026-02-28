@@ -3,6 +3,7 @@ import "./globals.css";
 import { MainNav } from "@/components/main-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { CartProviderWithDrawer } from "@/components/cart-provider";
+import { SeasonalThemeProvider } from "@/components/seasonal-theme-context";
 
 export const metadata: Metadata = {
   title: "Le Cadeau – Luxury Florist",
@@ -26,13 +27,15 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased min-h-screen bg-background text-foreground">
-        <CartProviderWithDrawer>
-          <div className="flex min-h-screen flex-col">
-            <MainNav />
-            <main className="flex-1">{children}</main>
-            <SiteFooter />
-          </div>
-        </CartProviderWithDrawer>
+        <SeasonalThemeProvider>
+          <CartProviderWithDrawer>
+            <div className="flex min-h-screen flex-col">
+              <MainNav />
+              <main className="flex-1">{children}</main>
+              <SiteFooter />
+            </div>
+          </CartProviderWithDrawer>
+        </SeasonalThemeProvider>
       </body>
     </html>
   );

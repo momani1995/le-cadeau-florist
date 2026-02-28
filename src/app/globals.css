@@ -8,6 +8,7 @@
   --accent-cream: #f6f1e8;
   --accent-gold: #d4af37; /* brushed gold */
   --accent-gold-soft: #b89653;
+  --accent-rose: #f7e7e6; /* rose quartz for seasonal themes */
 }
 
 @theme inline {
@@ -18,6 +19,7 @@
   --color-cream: var(--accent-cream);
   --color-gold: var(--accent-gold);
   --color-gold-soft: var(--accent-gold-soft);
+  --color-rose: var(--accent-rose);
 }
 
 body {

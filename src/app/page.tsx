@@ -3,8 +3,10 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { SafeImage } from "@/components/safe-image";
 import { ProductCard } from "@/components/product-card";
 import products from "@/data/products.json";
+import { useSeasonalTheme } from "@/components/seasonal-theme-context";
 
 const featuredCollections = [
   {
@@ -40,7 +42,14 @@ const bestsellers = [
   ...products.plants.filter((item) => item.featured),
 ];
 
+const mothersDayFavorites = [
+  ...products.bouquets.filter((item) => item.featured),
+  ...products.hatBoxes.filter((item) => item.featured),
+];
+
 export default function Home() {
+  const { isMothersDay } = useSeasonalTheme();
+
   return (
     <div className="relative isolate overflow-hidden">
       {/* Cinematic background accents */}
@@ -60,35 +69,52 @@ export default function Home() {
         >
           <div className="inline-flex items-center gap-2 rounded-full border border-brand-gold/35 bg-[color:rgba(3,17,11,0.9)] px-3 py-1 text-xs font-medium uppercase tracking-[0.22em] text-[color:#f6f1e8]/80">
             <Sparkles className="h-3 w-3 text-brand-gold" />
-            Luxury Florist · Established with Grace
+            {isMothersDay
+              ? "The Mother’s Day Collection"
+              : "Luxury Florist · Established with Grace"}
           </div>
 
           <div className="space-y-4">
-            <h1 className="font-heading text-4xl leading-tight tracking-[0.18em] text-[color:#f6f1e8] sm:text-5xl lg:text-[3.1rem]">
-              LE CADEAU
-              <span className="block text-base font-normal tracking-[0.38em] text-brand-gold">
-                FLEURISTE DE LUXE
-              </span>
-            </h1>
+            {isMothersDay ? (
+              <h1 className="font-heading text-3xl leading-tight tracking-[0.12em] text-[color:#f6f1e8] sm:text-[2.1rem]">
+                The Mother’s Day Collection:
+                <span className="block text-[1.6rem] font-normal tracking-[0.16em] text-[color:#f7e7e6]">
+                  Honor Her Grace
+                </span>
+              </h1>
+            ) : (
+              <h1 className="font-heading text-4xl leading-tight tracking-[0.18em] text-[color:#f6f1e8] sm:text-5xl lg:text-[3.1rem]">
+                LE CADEAU
+                <span className="block text-base font-normal tracking-[0.38em] text-brand-gold">
+                  FLEURISTE DE LUXE
+                </span>
+              </h1>
+            )}
             <p className="font-body text-sm leading-relaxed text-[color:#f6f1e8]/75 sm:text-base">
-              A cinematic floral house crafting bouquets, hat boxes and curated
-              gifts for moments that deserve more than ordinary. Each creation
-              is styled with couture precision, wrapped in forest green and
-              brushed with molten gold.
+              A cinematic floral house crafting bouquets, hat boxes and curated gifts for
+              moments that deserve more than ordinary. Each creation is styled with couture
+              precision, wrapped in forest green and brushed with molten gold.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
             <Link
               href="#featured"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-gold px-7 py-3 text-xs font-semibold uppercase tracking-[0.24em] text-[color:#1b231f] shadow-[0_20px_60px_rgba(0,0,0,0.6)] transition hover:bg-brand-gold/90"
+              className="group relative inline-flex items-center justify-center gap-2 rounded-full border border-transparent bg-[linear-gradient(135deg,#D4AF37,#F9E498)] bg-[length:200%_200%] px-[1px] py-[1px] text-xs font-semibold uppercase tracking-[0.26em] text-[color:#f6f1e8] shadow-[0_0_26px_rgba(212,175,55,0.55)] transition-all duration-300 hover:bg-[position:100%_0] active:scale-95 active:shadow-[0_0_40px_rgba(212,175,55,0.8)]"
             >
-              Shop Collections
-              <ArrowRight className="h-4 w-4" />
+              <span className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[color:#0b3b2e] px-7 py-3 text-[0.7rem]">
+                <span className="tracking-[0.26em] text-[color:#fdf9ee]">
+                  Shop Collections
+                </span>
+                <ArrowRight className="h-4 w-4 text-[color:#fdf9ee]" />
+              </span>
             </Link>
-            <button className="inline-flex items-center justify-center rounded-full border border-[color:rgba(246,241,232,0.28)] px-6 py-3 text-xs font-medium uppercase tracking-[0.22em] text-[color:#f6f1e8]/80 transition hover:border-brand-gold hover:bg-[color:rgba(10,24,18,0.9)]">
+            <Link
+              href="/bespoke"
+              className="inline-flex items-center justify-center rounded-full border border-[color:rgba(246,241,232,0.28)] px-6 py-3 text-xs font-medium uppercase tracking-[0.22em] text-[color:#f6f1e8]/80 transition hover:border-brand-gold hover:bg-[color:rgba(10,24,18,0.9)]"
+            >
               Bespoke Occasions
-            </button>
+            </Link>
           </div>
 
           <div className="flex flex-wrap gap-6 text-xs text-[color:#f6f1e8]/60">
@@ -114,34 +140,64 @@ export default function Home() {
           transition={{ duration: 0.9, ease: "easeOut", delay: 0.08 }}
           className="relative z-10 w-full max-w-md"
         >
-          <div className="relative overflow-hidden rounded-3xl border border-brand-gold/45 bg-[radial-gradient(circle_at_top,#173529,transparent_55%),linear-gradient(145deg,#08130e,#020806)] p-5 shadow-[0_32px_80px_rgba(0,0,0,0.75)]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#ffffff20,transparent_60%)] mix-blend-soft-light" />
-            <div className="relative space-y-4">
+          <div className="relative overflow-hidden rounded-3xl border border-brand-gold/45 bg-[color:#050b08] shadow-[0_32px_80px_rgba(0,0,0,0.75)]">
+            <div className="relative aspect-[4/3]">
+              <SafeImage
+                src={
+                  isMothersDay
+                    ? "/hero-mothers-day.png"
+                    : "/assets/hero-tableau.png"
+                }
+                alt={
+                  isMothersDay
+                    ? "Soft pink peonies with brushed gold accents styled for the Le Cadeau Mother’s Day collection."
+                    : "Le Cadeau tableau featuring hat boxes, bouquets, candles and indoor plants styled on a cream backdrop."
+                }
+                fill
+                priority
+                sizes="(min-width: 1024px) 480px, 100vw"
+                className="object-cover"
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+            </div>
+            <div className="relative space-y-3 px-5 pb-5 pt-4">
               <p className="font-heading text-xs uppercase tracking-[0.3em] text-[color:#f6f1e8]/70">
-                Fleur de Lis Collection
+                {isMothersDay
+                  ? "The Mother’s Day Vignette"
+                  : "The Le Cadeau Tableau"}
               </p>
               <p className="max-w-xs text-sm text-[color:#f6f1e8]/75">
-                Imagine tall crystal vases, velvet hat boxes, and candlelight
-                glinting off metallic gold – a vignette curated to feel like a
-                still from a film set in Paris at midnight.
+                {isMothersDay
+                  ? "Pink peonies, soft cream textiles and brushed gold details styled as an ode to the mothers we honor."
+                  : "Our signature forest-green hat boxes, hand-tied bouquets, candles and indoor plants styled together as a cinematic still life."}
               </p>
-
-              <div className="grid grid-cols-3 gap-2 pt-2">
-                <div className="h-32 rounded-2xl bg-[radial-gradient(circle_at_top,#f5e9d2,#b89564)] object-cover shadow-[0_20px_45px_rgba(0,0,0,0.65)]" />
-                <div className="h-32 rounded-2xl bg-[radial-gradient(circle_at_top,#234134,#102219)] opacity-90 shadow-[0_18px_40px_rgba(0,0,0,0.7)]" />
-                <div className="h-32 rounded-2xl bg-[radial-gradient(circle_at_top,#1c2621,#050806)] opacity-95 shadow-[0_18px_40px_rgba(0,0,0,0.8)]" />
-              </div>
-
-              <div className="flex items-center justify-between pt-2 text-xs text-[color:#f6f1e8]/60">
-                <span>Styled in our Le Cadeau atelier.</span>
-                <span className="rounded-full bg-[color:rgba(2,12,8,0.85)] px-3 py-1 font-medium uppercase tracking-[0.22em] text-brand-gold">
-                  Limited Edition
-                </span>
-              </div>
             </div>
           </div>
         </motion.div>
       </section>
+
+      {isMothersDay && (
+        <section className="relative z-10 mx-auto max-w-6xl px-6 pb-10 lg:px-8">
+          <div className="mb-6 flex items-end justify-between gap-4">
+            <div>
+              <p className="font-heading text-xs uppercase tracking-[0.3em] text-[color:#f7e7e6]">
+                Mother’s Day Favorites
+              </p>
+              <h2 className="mt-2 font-heading text-2xl tracking-[0.12em] text-[color:#f6f1e8] sm:text-[1.65rem]">
+                Hat Boxes &amp; Bouquets She’ll Remember
+              </h2>
+            </div>
+          </div>
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {mothersDayFavorites.map((product) => (
+              <ProductCard
+                key={product.id}
+                {...product}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Bestsellers */}
       <section className="relative z-10 mx-auto max-w-6xl px-6 pb-16 lg:px-8">
@@ -184,6 +240,18 @@ export default function Home() {
             Each collection is designed to move seamlessly from online gallery
             to doorstep, arriving with museum-worthy presentation.
           </p>
+        </div>
+
+        <div className="mb-8 overflow-hidden rounded-3xl border border-brand-gold/30 bg-[color:#050b08] shadow-[0_26px_70px_rgba(0,0,0,0.8)]">
+          <div className="relative aspect-[4/2]">
+            <SafeImage
+              src="/assets/le-cadeau-four-grid.png"
+              alt="Four Le Cadeau product vignettes: Parisian Hat Boxes, Candlelit Finishing Touches, Haute Couture Bouquets, and The Indoor Plant Atelier."
+              fill
+              sizes="(min-width: 1024px) 1024px, 100vw"
+              className="object-cover"
+            />
+          </div>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">

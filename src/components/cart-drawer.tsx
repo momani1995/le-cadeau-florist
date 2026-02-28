@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import { useCart } from "@/components/cart-context";
+import { SafeImage } from "@/components/safe-image";
 
 const backdropVariants = {
   hidden: { opacity: 0 },
@@ -109,12 +109,13 @@ export function CartDrawer() {
                       className="flex gap-3 rounded-2xl border border-black/5 bg-white/80 p-3"
                     >
                       <div className="relative h-20 w-16 overflow-hidden rounded-xl bg-[color:#e5e7eb]">
-                        <Image
+                        <SafeImage
                           src={item.imageSrc}
                           alt={item.name}
                           fill
                           className="object-cover"
                           sizes="64px"
+                          fallbackClassName="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-[color:#e5e7eb] text-[color:#6b7280]"
                         />
                       </div>
                       <div className="flex flex-1 flex-col justify-between">
@@ -193,12 +194,22 @@ export function CartDrawer() {
                   {formatCurrency(totalPrice)}
                 </span>
               </div>
-              <button
-                disabled={!hasItems}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[color:#0b3b2e] px-6 py-3 text-xs font-semibold uppercase tracking-[0.24em] text-brand-gold shadow-[0_18px_55px_rgba(0,0,0,0.25)] transition hover:bg-[color:#14553a] disabled:cursor-not-allowed disabled:opacity-60"
+              <Link
+                href={hasItems ? "/checkout" : "#"}
+                onClick={(event) => {
+                  if (!hasItems) {
+                    event.preventDefault();
+                    return;
+                  }
+                  closeCart();
+                }}
+                aria-disabled={!hasItems}
+                className={`inline-flex w-full items-center justify-center gap-2 rounded-full bg-[color:#0b3b2e] px-6 py-3 text-xs font-semibold uppercase tracking-[0.24em] text-brand-gold shadow-[0_18px_55px_rgba(0,0,0,0.25)] transition hover:bg-[color:#14553a] ${
+                  !hasItems ? "cursor-not-allowed opacity-60" : ""
+                }`}
               >
                 Proceed to Checkout
-              </button>
+              </Link>
             </div>
           </motion.aside>
         </motion.div>

@@ -4,10 +4,12 @@ export type Product = {
   id: string;
   name: string;
   category: string;
+  subCategory?: string;
   price: string;
   imageSrc: string;
   description: string;
   featured: boolean;
+  isMothersDay?: boolean;
 };
 
 type RawData = {

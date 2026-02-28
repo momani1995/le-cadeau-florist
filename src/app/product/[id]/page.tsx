@@ -2,15 +2,16 @@
 
 import { use } from "react";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { ShoppingBag, ArrowLeft, Minus, Plus } from "lucide-react";
 import { FleurDeLis } from "@/components/fleur-de-lis";
 import { getProductById, getRelatedProducts } from "@/lib/products";
 import { ProductCard } from "@/components/product-card";
 import { useCart } from "@/components/cart-context";
+import { SafeImage } from "@/components/safe-image";
+import { normalizeImageSrc } from "@/lib/images";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -70,13 +71,18 @@ export default function ProductDetailPage({
   const [qty, setQty] = useState(1);
   const { addItem, openCart } = useCart();
 
+  const imageSrc = useMemo(
+    () => normalizeImageSrc(product.imageSrc),
+    [product.imageSrc],
+  );
+
   const handleAddToCart = () => {
     addItem(
       {
         id: product.id,
         name: product.name,
         price: product.price,
-        imageSrc: product.imageSrc,
+        imageSrc,
         category: product.category,
       },
       qty
@@ -116,7 +122,7 @@ export default function ProductDetailPage({
             className="relative md:sticky md:top-24 md:self-start"
           >
             <div className="relative aspect-[4/5] overflow-hidden rounded-3xl border border-brand-gold/20 shadow-[0_32px_80px_rgba(0,0,0,0.75)]">
-              <Image
+              <SafeImage
                 src={product.imageSrc}
                 alt={product.name}
                 fill
@@ -274,6 +280,7 @@ export default function ProductDetailPage({
                     price={item.price}
                     imageSrc={item.imageSrc}
                     category={item.category}
+                    isMothersDay={item.isMothersDay}
                   />
                 </motion.div>
               ))}
