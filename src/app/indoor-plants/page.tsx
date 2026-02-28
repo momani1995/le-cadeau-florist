@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { SafeImage } from "@/components/safe-image";
 import { ProductCard } from "@/components/product-card";
+import { Product } from "@/lib/products";
 import products from "@/data/products.json";
 
 const fadeUp = {
@@ -11,12 +12,10 @@ const fadeUp = {
   visible: { opacity: 1, y: 0 },
 };
 
-type PlantProduct = (typeof products.plants)[number];
-
 export default function IndoorPlantsPage() {
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
-  const all = (products.plants ?? []) as PlantProduct[];
+  const all = (products.plants ?? []) as Product[];
   const plantProducts = type ? all.filter((p) => p.subCategory === type) : all;
 
   return (

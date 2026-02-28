@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { SafeImage } from "@/components/safe-image";
 import { ProductCard } from "@/components/product-card";
+import { Product } from "@/lib/products";
 import products from "@/data/products.json";
 
 const fadeUp = {
@@ -11,12 +12,10 @@ const fadeUp = {
   visible: { opacity: 1, y: 0 },
 };
 
-type CandleProduct = (typeof products.candles)[number];
-
 export default function CandlesGiftsPage() {
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
-  const all = (products.candles ?? []) as CandleProduct[];
+  const all = (products.candles ?? []) as Product[];
   const candleProducts = type
     ? all.filter((p) => p.subCategory === type)
     : all;
