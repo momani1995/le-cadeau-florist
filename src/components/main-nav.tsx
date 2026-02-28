@@ -147,11 +147,7 @@ export function MainNav() {
             aria-label="Open menu"
             aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
+            <Menu className="h-5 w-5" />
           </button>
           <button
             type="button"
@@ -180,7 +176,7 @@ export function MainNav() {
         </div>
       </div>
 
-      {/* Mobile menu overlay and panel */}
+      {/* Mobile menu: light dim (no blur) + solid panel from right */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
@@ -189,7 +185,7 @@ export function MainNav() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-40 bg-black/25 md:hidden"
               onClick={closeMobileMenu}
               aria-hidden
             />
@@ -197,36 +193,36 @@ export function MainNav() {
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={{ type: "tween", duration: 0.25, ease: "easeOut" }}
-              className="fixed right-0 top-0 z-50 flex h-full w-full max-w-[320px] flex-col border-l border-brand-gold/20 bg-[color:rgba(3,17,11,0.98)] shadow-2xl md:hidden"
+              transition={{ type: "tween", duration: 0.28, ease: "easeOut" }}
+              className="fixed right-0 top-0 z-50 flex h-full w-full max-w-[300px] flex-col bg-[#050b08] shadow-[0_0_40px_rgba(0,0,0,0.4)] md:hidden"
               aria-modal="true"
               aria-label="Navigation menu"
             >
-              <div className="flex items-center justify-between border-b border-brand-gold/15 px-4 py-4">
-                <span className="font-heading text-xs uppercase tracking-[0.22em] text-brand-gold">
+              <div className="flex items-center justify-between border-b border-brand-gold/20 px-5 py-5">
+                <span className="font-heading text-[0.7rem] uppercase tracking-[0.28em] text-brand-gold">
                   Menu
                 </span>
                 <button
                   type="button"
                   onClick={closeMobileMenu}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[color:#f6f1e8]/80 hover:bg-white/5 hover:text-brand-gold"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full text-[color:#f6f1e8] transition hover:bg-white/10 hover:text-brand-gold"
                   aria-label="Close menu"
                 >
-                  <X className="h-5 w-5" />
+                  <X className="h-5 w-5" strokeWidth={1.8} />
                 </button>
               </div>
-              <nav className="flex-1 overflow-y-auto px-4 py-4">
-                <ul className="space-y-1">
+              <nav className="flex-1 overflow-y-auto px-5 py-6">
+                <ul className="space-y-0.5">
                   {navLinks.map((link) => (
                     <li key={link.key}>
                       <Link
                         href={link.href}
                         onClick={closeMobileMenu}
-                        className="block rounded-xl px-3 py-2.5 font-heading text-sm tracking-[0.12em] text-[color:#f6f1e8] transition hover:bg-[color:rgba(15,55,38,0.6)] hover:text-brand-gold"
+                        className="block rounded-lg px-3 py-2.5 font-heading text-[0.95rem] tracking-[0.1em] text-[color:#f6f1e8] transition hover:bg-white/5 hover:text-brand-gold"
                       >
                         {link.label}
                       </Link>
-                      <ul className="ml-3 mt-1 space-y-0.5 border-l border-brand-gold/20 pl-3">
+                      <ul className="ml-4 mt-0.5 space-y-0.5 border-l border-brand-gold/25 pl-3">
                         {megaMenuBranches[link.key].map((branch) => {
                           const typeParam = encodeURIComponent(branch);
                           const href = `/${link.key}?type=${typeParam}`;
@@ -235,7 +231,7 @@ export function MainNav() {
                               <Link
                                 href={href}
                                 onClick={closeMobileMenu}
-                                className="block rounded-lg px-2 py-1.5 text-[0.8rem] text-[color:#f6f1e8]/85 transition hover:bg-[color:rgba(15,55,38,0.5)] hover:text-brand-gold"
+                                className="block rounded-lg py-1.5 pl-1 text-[0.85rem] text-[color:#e5e7eb] transition hover:text-brand-gold"
                               >
                                 {branch}
                               </Link>
@@ -246,11 +242,25 @@ export function MainNav() {
                     </li>
                   ))}
                 </ul>
-                <div className="mt-6 border-t border-brand-gold/15 pt-4">
+                <div className="mt-6 space-y-1 border-t border-brand-gold/20 pt-5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      toggleMothersDay();
+                      closeMobileMenu();
+                    }}
+                    className={`block w-full rounded-lg px-3 py-2.5 text-left font-heading text-[0.95rem] tracking-[0.1em] transition hover:bg-white/5 ${
+                      isMothersDay
+                        ? "text-brand-gold"
+                        : "text-[color:#f6f1e8] hover:text-brand-gold"
+                    }`}
+                  >
+                    Mother&apos;s Day
+                  </button>
                   <Link
                     href="/bespoke"
                     onClick={closeMobileMenu}
-                    className="block rounded-xl px-3 py-2.5 text-center font-heading text-xs uppercase tracking-[0.2em] text-brand-gold transition hover:bg-[color:rgba(15,55,38,0.6)]"
+                    className="block rounded-lg px-3 py-2.5 font-heading text-[0.95rem] tracking-[0.1em] text-[color:#f6f1e8] transition hover:bg-white/5 hover:text-brand-gold"
                   >
                     Bespoke Occasions
                   </Link>
