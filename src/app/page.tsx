@@ -5,6 +5,7 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { SafeImage } from "@/components/safe-image";
 import { ProductCard } from "@/components/product-card";
+import { ProductSlider } from "@/components/product-slider";
 import products from "@/data/products.json";
 import { useSeasonalTheme } from "@/components/seasonal-theme-context";
 
@@ -40,6 +41,20 @@ const bestsellers = [
   ...products.hatBoxes.filter((item) => item.featured),
   ...products.candles.filter((item) => item.featured),
   ...products.plants.filter((item) => item.featured),
+  {
+    id: "marble-petal-vase",
+    name: "Marble Petal Vase",
+    price: "$145",
+    imageSrc: "/assets/hero-tableau.png",
+    category: "ACCESSORIES",
+  },
+  {
+    id: "midnight-bloom-diffuser",
+    name: "Midnight Bloom Diffuser",
+    price: "$85",
+    imageSrc: "/assets/hero-tableau.png",
+    category: "FRAGRANCE",
+  },
 ];
 
 const mothersDayFavorites = [
@@ -199,28 +214,31 @@ export default function Home() {
         </section>
       )}
 
-      {/* Bestsellers */}
-      <section className="relative z-10 mx-auto max-w-6xl px-6 pb-16 lg:px-8">
-        <div className="mb-8 flex items-end justify-between gap-4">
-          <div>
-            <p className="font-heading text-xs uppercase tracking-[0.3em] text-brand-gold">
-              Bestsellers
-            </p>
-            <h2 className="mt-2 font-heading text-2xl tracking-[0.12em] text-[color:#f6f1e8] sm:text-[1.65rem]">
-              Signature Pieces
-            </h2>
-          </div>
-          <p className="hidden max-w-xs text-xs text-[color:#f6f1e8]/65 sm:block">
-            Hover a piece to reveal the atelier-style add-to-cart moment.
-          </p>
-        </div>
+      <ProductSlider
+        sectionTitle="Signature Pieces"
+        subtitle="Bestsellers"
+        productData={bestsellers}
+      />
 
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-          {bestsellers.map((product) => (
-            <ProductCard key={product.name} {...product} />
-          ))}
-        </div>
-      </section>
+      <ProductSlider
+        sectionTitle="Flower Bouquets"
+        productData={products.bouquets ?? []}
+      />
+
+      <ProductSlider
+        sectionTitle="Hat Boxes"
+        productData={products.hatBoxes ?? []}
+      />
+
+      <ProductSlider
+        sectionTitle="Candles & Gifts"
+        productData={products.candles ?? []}
+      />
+
+      <ProductSlider
+        sectionTitle="Indoor Plants"
+        productData={products.plants ?? []}
+      />
 
       {/* Featured collections grid */}
       <section

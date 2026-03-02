@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { SafeImage } from "@/components/safe-image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { Lock } from "lucide-react";
 import { FleurDeLis } from "@/components/fleur-de-lis";
 import { useCart } from "@/components/cart-context";
 
@@ -24,10 +25,12 @@ export default function CheckoutPage() {
   const { items, totalPrice, giftMessage, setGiftMessage } = useCart();
   const router = useRouter();
   const [isPlacing, setIsPlacing] = useState(false);
+  const [isPaying, setIsPaying] = useState(false);
   const [deliveryDate, setDeliveryDate] = useState("");
   const [deliveryError, setDeliveryError] = useState("");
   const [includeMothersDayCard, setIncludeMothersDayCard] = useState(true);
-   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   const hasItems = items.length > 0;
 
@@ -97,6 +100,52 @@ export default function CheckoutPage() {
     }
   };
 
+  const handlePayNow = async () => {
+    if (!hasItems || isPaying) return;
+    const form = formRef.current;
+    if (!form) return;
+
+    const formData = new FormData(form);
+    const customerName =
+      (formData.get("fullName") as string | null)?.trim() || "Checkout Customer";
+    const customerEmail =
+      (formData.get("email") as string | null)?.trim() || "checkout@example.com";
+
+    setIsPaying(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: totalPrice,
+          currency: "JOD",
+          customer: {
+            name: customerName,
+            email: customerEmail,
+          },
+        }),
+      });
+
+      if (!res.ok) {
+        console.error("Failed to create Tap charge", res.status);
+        return;
+      }
+
+      const data = (await res.json()) as { url?: string };
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        console.error("Tap response missing URL");
+      }
+    } catch (error) {
+      console.error("Error calling /api/checkout", error);
+    } finally {
+      setIsPaying(false);
+    }
+  };
+
   if (!hasItems) {
     return (
       <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center gap-4 px-6 text-center">
@@ -157,7 +206,11 @@ export default function CheckoutPage() {
             animate="visible"
             className="space-y-8 rounded-3xl border border-white/5 bg-[color:rgba(5,16,11,0.95)]/90 p-6 shadow-[0_24px_70px_rgba(0,0,0,0.7)]"
           >
-            <form className="space-y-8" onSubmit={handleSubmit}>
+            <form
+              ref={formRef}
+              className="space-y-8"
+              onSubmit={handleSubmit}
+            >
               {/* Delivery Information */}
               <section className="space-y-4">
                 <p className="font-heading text-[0.7rem] uppercase tracking-[0.3em] text-brand-gold">
@@ -170,6 +223,7 @@ export default function CheckoutPage() {
                     </label>
                     <input
                       required
+                      name="fullName"
                       className="w-full rounded-xl border border-white/10 bg-[color:#020908] px-3 py-2 text-sm text-[color:#f6f1e8] outline-none ring-0 placeholder:text-[color:#6b7280] focus:border-brand-gold focus:ring-1 focus:ring-brand-gold/40"
                       placeholder="Recipient's name"
                     />
@@ -181,6 +235,7 @@ export default function CheckoutPage() {
                     <input
                       required
                       type="email"
+                      name="email"
                       className="w-full rounded-xl border border-white/10 bg-[color:#020908] px-3 py-2 text-sm text-[color:#f6f1e8] outline-none ring-0 placeholder:text-[color:#6b7280] focus:border-brand-gold focus:ring-1 focus:ring-brand-gold/40"
                       placeholder="you@example.com"
                     />
@@ -299,121 +354,56 @@ export default function CheckoutPage() {
 
               {/* Payment Method */}
               <section className="space-y-4">
-                <p className="font-heading text-[0.7rem] uppercase tracking-[0.3em] text-brand-gold">
-                  Payment Method
-                </p>
-                <div className="space-y-3 rounded-2xl border border-white/10 bg-[color:#020908] p-4">
-                  <p className="text-xs text-[color:#9ca3af]">
-                    Choose how you would like to complete your payment.
-                  </p>
-                  <div className="grid gap-3 md:grid-cols-3">
-                    {/* Credit / Debit Card */}
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("card")}
-                      className={`flex flex-col justify-between rounded-2xl border px-3 py-3 text-left transition ${
-                        paymentMethod === "card"
-                          ? "border-brand-gold bg-[radial-gradient(circle_at_top,#1b3b2e,#020908)] shadow-[0_0_0_1px_rgba(212,175,55,0.4)]"
-                          : "border-white/10 bg-[color:#020908] hover:border-brand-gold/60 hover:bg-[radial-gradient(circle_at_top,#12261c,#020908)]"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <div>
-                          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-[color:#f6f1e8]">
-                            Credit / Debit Card
-                          </p>
-                          <p className="mt-1 text-[0.65rem] text-[color:#9ca3af]">
-                            All major international cards.
-                          </p>
-                        </div>
-                        <div className="flex flex-col items-end gap-1 text-[0.65rem] font-semibold uppercase tracking-[0.26em] text-brand-gold">
-                          <span className="rounded-full border border-brand-gold/40 px-2 py-0.5">
-                            Visa
-                          </span>
-                          <span className="rounded-full border border-brand-gold/40 px-2 py-0.5">
-                            Mastercard
-                          </span>
-                        </div>
-                      </div>
-                      {paymentMethod === "card" && (
-                        <p className="mt-2 text-[0.6rem] text-[color:#f6f1e8]/70">
-                          Card details will be collected on the next secure step.
+                <div className="space-y-3 rounded-2xl border border-brand-gold/20 bg-[color:rgba(5,16,11,0.95)] p-4 sm:p-5">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-2">
+                      <Lock className="h-4 w-4 text-brand-gold" strokeWidth={1.6} />
+                      <div>
+                        <p className="font-heading text-xs uppercase tracking-[0.3em] text-brand-gold">
+                          Payment Method
                         </p>
-                      )}
-                    </button>
-
-                    {/* Jordanian Local Cards */}
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("local")}
-                      className={`flex flex-col justify-between rounded-2xl border px-3 py-3 text-left transition ${
-                        paymentMethod === "local"
-                          ? "border-brand-gold bg-[radial-gradient(circle_at_top,#1b3b2e,#020908)] shadow-[0_0_0_1px_rgba(212,175,55,0.4)]"
-                          : "border-white/10 bg-[color:#020908] hover:border-brand-gold/60 hover:bg-[radial-gradient(circle_at_top,#12261c,#020908)]"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <div>
-                          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-[color:#f6f1e8]">
-                            Jordanian Local Cards
-                          </p>
-                          <p className="mt-1 text-[0.65rem] text-[color:#9ca3af]">
-                            Pay using Jordanian bank cards.
-                          </p>
-                        </div>
-                        <div className="flex flex-col items-end gap-1 text-[0.6rem] font-semibold uppercase tracking-[0.24em] text-brand-gold/90">
-                          <span className="rounded-full border border-brand-gold/40 px-2 py-0.5">
-                            JCC
-                          </span>
-                          <span className="rounded-full border border-brand-gold/40 px-2 py-0.5">
-                            Network Intl.
-                          </span>
-                        </div>
-                      </div>
-                      {paymentMethod === "local" && (
-                        <p className="mt-2 text-[0.6rem] text-[color:#f6f1e8]/70">
-                          You&apos;ll be redirected to a secure local payment page.
+                        <p className="text-[0.7rem] text-[color:#9ca3af]">
+                          All transactions are secure and encrypted.
                         </p>
-                      )}
-                    </button>
-
-                    {/* Apple Pay / Google Pay */}
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("wallet")}
-                      className={`flex flex-col justify-between rounded-2xl border px-3 py-3 text-left transition ${
-                        paymentMethod === "wallet"
-                          ? "border-brand-gold bg-[radial-gradient(circle_at_top,#1b3b2e,#020908)] shadow-[0_0_0_1px_rgba(212,175,55,0.4)]"
-                          : "border-white/10 bg-[color:#020908] hover:border-brand-gold/60 hover:bg-[radial-gradient(circle_at_top,#12261c,#020908)]"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <div>
-                          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-[color:#f6f1e8]">
-                            Apple Pay / Google Pay
-                          </p>
-                          <p className="mt-1 text-[0.65rem] text-[color:#9ca3af]">
-                            One-tap checkout on supported devices.
-                          </p>
-                        </div>
-                        <div className="flex flex-col items-end gap-1 text-[0.7rem] font-semibold text-brand-gold">
-                          <span className="rounded-full border border-brand-gold/40 px-2 py-0.5">
-                             Pay
-                          </span>
-                          <span className="rounded-full border border-brand-gold/40 px-2 py-0.5">
-                            G Pay
-                          </span>
-                        </div>
                       </div>
-                      {paymentMethod === "wallet" && (
-                        <p className="mt-2 text-[0.6rem] text-[color:#f6f1e8]/70">
-                          We&apos;ll prompt your device wallet to complete payment.
-                        </p>
-                      )}
-                    </button>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex flex-wrap items-center gap-3 text-[0.75rem] text-[color:#e5e7eb]/80">
+                    <span className="text-[color:#9ca3af]">
+                      We accept all major cards and digital wallets via{" "}
+                      <span className="font-semibold text-brand-gold">Tap Payments</span>.
+                    </span>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="inline-flex items-center justify-center rounded-full border border-brand-gold/40 px-2.5 py-1 text-[0.65rem] uppercase tracking-[0.18em] text-brand-gold">
+                        Visa
+                      </span>
+                      <span className="inline-flex items-center justify-center rounded-full border border-brand-gold/40 px-2.5 py-1 text-[0.65rem] uppercase tracking-[0.18em] text-brand-gold">
+                        Mastercard
+                      </span>
+                      <span className="inline-flex items-center justify-center rounded-full border border-brand-gold/40 px-2.5 py-1 text-[0.65rem] uppercase tracking-[0.18em] text-brand-gold">
+                        Apple Pay
+                      </span>
+                      <span className="inline-flex items-center justify-center rounded-full border border-brand-gold/40 px-2.5 py-1 text-[0.65rem] uppercase tracking-[0.18em] text-brand-gold">
+                        Google Pay
+                      </span>
+                    </div>
                   </div>
                 </div>
               </section>
+
+              <div className="mt-4 flex items-center justify-center gap-2 text-[0.7rem] text-[color:#9ca3af]">
+                <Lock className="h-3.5 w-3.5 text-brand-gold/80" strokeWidth={1.6} />
+                <span>Secure 256-bit SSL Encrypted Payment</span>
+              </div>
+
+              <button
+                type="button"
+                disabled={isPaying || !hasItems}
+                onClick={handlePayNow}
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full border border-brand-gold/40 bg-transparent px-6 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-brand-gold shadow-[0_0_25px_rgba(0,0,0,0.4)] transition hover:bg-[color:rgba(11,59,46,0.8)] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isPaying ? "Redirecting to Payment..." : "Pay Now"}
+              </button>
 
               <button
                 type="submit"

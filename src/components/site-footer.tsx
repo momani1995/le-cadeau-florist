@@ -95,10 +95,26 @@ export function SiteFooter() {
                 </li>
                 <li>
                   <Link
+                    href="/privacy-policy"
+                    className="transition-colors duration-200 hover:text-brand-gold"
+                  >
+                    Privacy Policy (Full)
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     href="/terms"
                     className="transition-colors duration-200 hover:text-brand-gold"
                   >
                     Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/refund-policy"
+                    className="transition-colors duration-200 hover:text-brand-gold"
+                  >
+                    Refund Policy
                   </Link>
                 </li>
               </ul>
