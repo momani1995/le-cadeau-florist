@@ -74,7 +74,7 @@ export default function Home() {
         <div className="absolute inset-x-0 bottom-[-10rem] h-80 bg-[radial-gradient(circle_at_center,#050b08,transparent_70%)] opacity-80" />
       </div>
 
-      <section className="mx-auto flex min-h-[calc(100vh-4.5rem)] max-w-6xl flex-col justify-center gap-16 px-6 py-14 lg:flex-row lg:items-center lg:gap-20 lg:px-8">
+      <section className="mx-auto flex min-h-[calc(100vh-4.5rem)] max-w-6xl flex-col justify-center gap-16 px-6 pb-14 pt-28 lg:flex-row lg:items-center lg:gap-20 lg:px-8 lg:pt-24">
         {/* Left: Cinematic hero copy */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -243,7 +243,7 @@ export default function Home() {
       {/* Featured collections grid */}
       <section
         id="featured"
-        className="relative z-10 mx-auto max-w-6xl px-6 pb-20 lg:px-8"
+        className="relative z-10 mx-auto max-w-6xl scroll-mt-32 px-6 pb-20 lg:px-8"
       >
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
