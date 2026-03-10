@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Le Cadeau
 
-## Getting Started
+Luxury florist e-commerce site: cinematic bouquets, hat boxes, candles, and indoor plants. Forest green and gold branding; Mother's Day seasonal theme; cart, checkout with Tap Payments, and post-payment webhooks (Formspree + Twilio WhatsApp).
 
-First, run the development server:
+## Tech stack
+
+- **Framework:** Next.js 16 (App Router), React 19
+- **Styling:** Tailwind CSS 4, custom theme (brand-gold, Playfair/DM Sans)
+- **Motion:** Framer Motion
+- **Icons:** Lucide React
+- **Payments:** Tap Payments (charge creation, redirect, webhook)
+- **Integrations:** Formspree (order email), Twilio (WhatsApp order alert)
+
+## Setup
 
 ```bash
+# Install
+npm install
+
+# Run dev
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create `.env.local` in the project root. Required for full functionality:
 
-## Learn More
+| Variable | Used by | Purpose |
+|----------|---------|--------|
+| `TAP_SECRET_KEY` | `/api/checkout`, `/api/tap/verify` | Tap Payments server API key |
+| `FORMSPREE_ENDPOINT` | `/api/webhooks/tap` | Formspree form URL for order notification email |
+| `TWILIO_ACCOUNT_SID` | `/api/webhooks/tap` | Twilio account |
+| `TWILIO_AUTH_TOKEN` | `/api/webhooks/tap` | Twilio auth |
+| `OWNER_PHONE_NUMBER` | `/api/webhooks/tap` | WhatsApp destination for order alerts |
+| `TWILIO_WHATSAPP_FROM` | `/api/webhooks/tap` | Twilio WhatsApp sender (e.g. `whatsapp:+1234567890`) |
 
-To learn more about Next.js, take a look at the following resources:
+Without these, checkout creation and webhook actions (email/WhatsApp) will fail or be skipped.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `npm run dev` – development server
+- `npm run build` – production build
+- `npm run start` – run production server
+- `npm run lint` – ESLint
 
-## Deploy on Vercel
+## Docs
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [ARCHITECTURE.md](./ARCHITECTURE.md) – structure, data flow, state, components
+- [PROJECT_CONTEXT.md](./PROJECT_CONTEXT.md) – current state, to-dos, technical debt

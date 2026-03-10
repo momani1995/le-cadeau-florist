@@ -1,0 +1,56 @@
+# Le Cadeau – Cursor rules
+
+Use these rules so generated code matches the existing codebase. Reference ARCHITECTURE.md and PROJECT_CONTEXT.md for structure and current state.
+
+## Project identity
+
+- Next.js 16 App Router, React 19. Luxury florist (Le Cadeau): forest green + gold; Playfair Display + DM Sans. No database; product data from `src/data/products.json`; cart is client + localStorage; payments via Tap; webhooks use Formspree and Twilio.
+
+## File and export conventions
+
+- **File names:** kebab-case for all components and route segments (e.g. `product-card.tsx`, `cart-drawer.tsx`, `payment-status/page.tsx`). Category client wrappers: `*-client.tsx` (e.g. `bouquets-client.tsx`).
+- **Components:** Use named exports (e.g. `export function ProductCard(...)`, `export function MainNav()`). No default exports for shared components.
+- **Pages:** Use default export for the page component (e.g. `export default function CheckoutPage()`).
+- **Libraries:** `src/lib/` for pure helpers (products, images). No default exports there; use named exports.
+
+## Client vs server
+
+- Add `"use client"` only when the module uses hooks (`useState`, `useCart`, `useSearchParams`, `useRouter`, etc.) or browser APIs. Prefer server components for static content (e.g. SiteFooter).
+- Layout: keep root `layout.tsx` as server; wrap only the tree that needs providers. Providers (Cart, SeasonalTheme) are client components.
+
+## TypeScript
+
+- Prefer explicit types for props and context. Types can live in the same file as the component or in the context file (e.g. `CartItem`, `CartContextValue` in `cart-context.tsx`). No central `types/` folder required; keep types close to usage.
+- Use the existing `Product` shape from `lib/products.ts` (and product JSON) for any new product-related props or API payloads.
+
+## Styling (Tailwind + globals)
+
+- **Tailwind:** Content from `./src/**/*.{js,ts,jsx,tsx,mdx}`. Use theme tokens: `brand-gold`, `font-heading`, `font-body`, and globals.css variables via `@theme inline` (e.g. `background`, `foreground`, `forest`, `cream`, `gold`). Avoid arbitrary hex in JSX when a token exists.
+- **Colors:** Cream text/surfaces: `#f6f1e8` or `var(--foreground)` / `--accent-cream`. Dark panels: `#050b08`, `#0b3b2e`, `rgba(7,19,14,0.88)` or equivalent. Gold: `brand-gold` or `--accent-gold`. Keep forest green + gold as the primary palette.
+- **Layout:** Cards/sections: `rounded-3xl` or `rounded-2xl`, `border border-brand-gold/20` or `/25`. Full-page atmosphere: radial gradients (e.g. `bg-[radial-gradient(...)]`). Buttons: gold gradient `linear-gradient(135deg,#D4AF37,#F9E498)` where appropriate.
+- **Motion:** Use Framer Motion for entrance/scroll (e.g. fadeUp with opacity + y). Prefer `initial` / `animate` / `whileInView`; keep animations subtle and on-brand.
+- **Utilities:** Use `.scrollbar-hide` for horizontal carousels (ProductSlider). Use `.font-heading` and `.font-body` for typography.
+
+## Components and data
+
+- **Images:** Use `SafeImage` and `normalizeImageSrc` from `@/lib/images` for any product or hero image to handle paths and fallbacks. Do not use raw `next/image` with product URLs without normalization.
+- **Product data:** Read via `getAllProducts`, `getProductById`, `getRelatedProducts` from `@/lib/products`. Do not import `products.json` directly in multiple places.
+- **Cart:** Use `useCart()` from context; do not duplicate cart state. Add/update/remove only through context methods. Cart is persisted in localStorage by the existing context.
+- **Seasonal theme:** Use `useSeasonalTheme()` for Mother's Day state when UI depends on it.
+
+## Routing and API
+
+- **Routes:** App Router only. Dynamic segments: `product/[id]`. Query-driven UI (e.g. category `type`, payment-status `tap_id`) via `useSearchParams` in client components; wrap in Suspense where needed.
+- **API routes:** Keep under `src/app/api/`. Use server-side env only (`process.env.TAP_SECRET_KEY`, etc.); never expose secrets via `NEXT_PUBLIC_*`. Document new env vars in README.md.
+
+## Naming and structure
+
+- **Components:** PascalCase (e.g. `ProductCard`, `CartDrawer`). **Props:** camelCase. **CSS classes:** Tailwind or kebab-case in globals.
+- **New features:** Prefer extending existing components (e.g. ProductCard, ProductSlider) over one-off duplicates. New pages: add under `src/app/<route>/page.tsx`; if the page needs client hooks, add a `*-client.tsx` and keep `page.tsx` thin (server shell + client wrapper).
+
+## Consistency checks before submitting
+
+- New or modified API routes: do they use env vars that are (or will be) documented in README?
+- New product or category data: does it live in `products.json` and use the existing `Product` shape (id, name, category, subCategory, price, imageSrc, etc.)?
+- New UI that shows products: does it use ProductCard and SafeImage (and normalizeImageSrc) where appropriate?
+- Styling: does it use theme colors and existing patterns (radial gradients, gold borders, rounded-3xl) rather than ad-hoc palettes?
